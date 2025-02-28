@@ -1,0 +1,8 @@
+q-ary basis [[I_(n-k) H], [0 q*I_k] ], n = 129, k = 64. Enteries are randomly in [0,100b]. 
+ If char is 'b', then it first samples an integer q of bit-length b; if char is 'p', it does the same and updates q to the smallest (probabilistic) prime that is greater; if char is 'q', then it sets q to the provided value. It returns a 2 x 2 block matrix [[I, H], [0, q*I]], where H is (d-k) x k and uniformly random modulo q. These bases correspond to the SIS/LWE q-ary lattices (see [MR09]). Goldstein-Mayer lattices correspond to k=1 and q prime (see [GM03]).
+迭代次数：501
+总时间成本: 5057.5 秒
+平均时间成本: 10.0948 秒
+reference:
+ [MR09] D. Micciancio and O. Regev. Post-Quantum Cryptography. Chapter of Lattice-based Cryptography, 147-191 (2009) 
+ [GM03] D. Goldstein and A. Mayer. On the equidistribution of Hecke points. Forum Mathematicum, 15:165–189 (2003)

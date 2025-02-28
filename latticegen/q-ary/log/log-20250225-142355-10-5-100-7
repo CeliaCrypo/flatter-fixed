@@ -1,0 +1,13 @@
+Start 1740464640
+R 6825eb7c |Lattice Reduction|Irregular|d:3 prec:1 alpha:-1 P:-1|
+profile(10)
+R 198e4f87 |Size Reduction|ElementaryZZ|d:3 bits:1.58 P:-1|
+T 198e4f87 b02f1172 499b2ad2 1 8 {10 128} 0.000059
+profile(0,10)[0.000474] 100.00+0.00 99.85+0.00 99.85+0.00 99.85+0.00 99.85+0.00 0.00+0.00 0.00+0.00 0.00+0.00 0.00+0.00 0.00+0.00 
+R 214b16ea |Lattice Reduction|FPLLL|d:3 prec:1 alpha:-1 P:-1|
+profile(0,10)[0.002474] 49.71+0.00 49.74+0.00 49.92+0.00 49.96+0.00 49.98+0.00 50.11+0.00 49.97+0.00 49.91+0.00 49.98+0.00 49.95+0.00 
+T 214b16ea 745ae53b 499b2ad2 1 8 {10 100 0.281259} 0.001938
+R df077764 |Matrix Multiplication|Threaded|m:1 n:1 k:1 bits:1.58 P:-1|
+R daecd4e1 |Matrix Multiplication|ElementaryMPZ|m:1 n:1 k:1 bits:1.58 P:-1|
+T df077764 88e2807f 499b2ad2 1 8 {10 10 10 64} 0.000184
+T 6825eb7c 499b2ad2 00000000 1 8 {10 100 0.281259} 0.003374
