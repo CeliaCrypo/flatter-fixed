@@ -1,0 +1,60 @@
+\documentclass[UTF8]{ctexart}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[a4paper, left=1.5cm, right=1.5cm]{geometry}
+
+\begin{document}
+
+\begin{abstract}
+我们引入了一种新的格基约简算法，其近似保证类似于 LLL 算法，而实际性能远远超过了当前的最先进水平。我们通过在递归算法结构中迭代应用精度管理技术实现了这些结果，并展示了这种方法的稳定性。我们分析了算法的渐近行为，并展示了启发式运行时间为 $O(n^\omega (C + n)^{1+\epsilon})$，其中 $n$ 为格的维度，$\omega \in (2, 3]$ 限制了规模约简、矩阵乘法和 QR 分解的成本，$C$ 限制了输入基 $B$ 的条件数的对数。这使得在常见应用中，对于精度 $p = O(\log \|B\|_{\max})$，运行时间为 $O(n^\omega (p + n)^{1+\epsilon})$。我们的算法完全实用，我们已经发布了我们的实现。我们通过实验验证了我们的启发式方法，对许多类别的密码学格进行了广泛的基准测试，并展示了我们的算法显著优于现有实现。
+\end{abstract}
+
+\section{引言}
+
+    \subsection{技术概览}
+
+\section{背景}
+
+    \subsection{记号}
+
+    \subsection{格约化算法历史}
+
+    \subsection{格约化的基本组成}
+
+    \subsection{启发假设}
+
+\section{格的轮廓和它们的应用}
+
+    \subsection{轮廓的例子}
+
+    \subsection{格轮廓的函数}
+
+    \subsection{轮廓的压缩和轮廓的落差}
+
+    \subsection{格约化的条件}
+
+
+\section{改进的格约化算法}
+
+    \subsection{格的压缩}
+
+    \subsection{子格约化}
+
+    \subsection{局部约化好的基的格约化}
+
+        \subsubsection{设置约化参数 $ \alpha $}
+
+        \subsubsection{迭代轮数的控制}
+
+        \subsubsection{设置相似参数 $\gamma$}
+
+    \subsection{LR约化的表现分析}
+
+        \subsubsection{potential与轮廓落差的关系}
+
+        \subsubsection{控制运行时间}
+
+    \subsection{一般格基的约化}
+
+\end{document}
