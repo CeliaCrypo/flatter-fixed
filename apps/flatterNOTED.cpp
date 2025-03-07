@@ -34,10 +34,10 @@ std::shared_ptr<std::ostream> out_lat;  // 输出流指针
 bool show_help = false;  // 是否显示帮助
 bool verbose = false;  // 是否启用详细输出
 bool quiet = false;  // 是否安静模式（不输出）
-bool red_quality_set = false;  // 是否设置了约简质量
+bool red_quality_set = false;  // 是否设置了约化质量
 bool logcond_set = false;  // 是否设置了条件数
-bool show_profile = false;  // 是否显示配置文件
-double alpha = 0.0;  // 约简质量参数
+bool show_profile = false;  // 是否显示轮廓
+double alpha = 0.0;  // 约化质量参数
 double logcond = 0.0;  // 条件数对数参数
 
 // 解析命令行参数的函数
@@ -66,12 +66,12 @@ bool parse_args(int argc, char** argv) {
       show_profile = true;  // 启用显示profile !!!!!!!!! 源码内置了现实profile的地方
     } else if (strcmp(arg, "-alpha") == 0) {
       if (red_quality_set || arg_ind + 1 >= argc) {
-        return false;  // 如果已经设置过约简质量或参数不足
+        return false;  // 如果已经设置过约化质量或参数不足
       }
       arg_ind++;
       double alpha_param = atof(argv[arg_ind]);  // 获取 alpha 参数
       alpha = alpha_param;  // 设置 alpha
-      red_quality_set = true;  // 标记已设置约简质量
+      red_quality_set = true;  // 标记已设置约化质量
     } else if (strcmp(arg, "-rhf") == 0) {
       if (red_quality_set || arg_ind + 1 >= argc) {
         return false;  // 参数不足或已设置过
@@ -79,7 +79,7 @@ bool parse_args(int argc, char** argv) {
       arg_ind++;
       double rhf_param = atof(argv[arg_ind]);  // 获取 RHF 参数
       alpha = 2 * log2(rhf_param);  // 根据 RHF 设置 alpha
-      red_quality_set = true;  // 标记已设置约简质量
+      red_quality_set = true;  // 标记已设置约化质量
     } else if (strcmp(arg, "-delta") == 0) {
       if (red_quality_set || arg_ind + 1 >= argc) {
         return false;  // 参数不足或已设置过
@@ -87,7 +87,7 @@ bool parse_args(int argc, char** argv) {
       arg_ind++;
       double delta_param = atof(argv[arg_ind]);  // 获取 delta 参数
       alpha = pow(0.255 / delta_param, 2);  // 根据 delta 设置 alpha
-      red_quality_set = true;  // 标记已设置约简质量
+      red_quality_set = true;  // 标记已设置约化质量
     } else if (strcmp(arg, "-logcond") == 0) {
       if (logcond_set || arg_ind + 1 >= argc) {
         return false;  // 参数不足或已设置过
@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
   if (out_lat == nullptr) {  // 如果没有设置输出流
     out_lat.reset(&std::cout, [](...){});
   }
-  if (!red_quality_set) {  // 如果没有设置约简质量
+  if (!red_quality_set) {  // 如果没有设置约化质量
     alpha = 0.06250805094100162;  // 默认值对应 RHF 1.0219
   }
   /*
@@ -165,17 +165,17 @@ int main(int argc, char** argv) {
     }
     std::cerr << "Largest entry is " << max_sz << " bits in length." << std::endl;  // 输出最大位数
     if (L.basis().is_upper_triangular()) {  // 如果格基是上三角形
-      flatter::Profile prof_in(L.rank());  // 创建输入配置文件
+      flatter::Profile prof_in(L.rank());  // 创建输入轮廓
       double logdet = 0;  // 初始化行列式的对数
       for (unsigned int i = 0; i < L.rank(); i++) {  // 遍历秩
         signed long exp;  // 指数
         double v = mpz_get_d_2exp(&exp, dB(i,i));  // 获取对角线元素的值和指数
-        prof_in[i] = log2(fabs(v)) + exp;  // 计算配置文件
+        prof_in[i] = log2(fabs(v)) + exp;  // 计算轮廓
         logdet += prof_in[i];  // 累加行列式的对数
       }
       std::cerr << "Lattice determinant is 2^(" << logdet << ")" << std::endl;  // 输出行列式
-      if (show_profile) {  // 如果请求显示配置文件
-        std::cerr << "Input profile:" << std::endl;  // 输出输入配置文件
+      if (show_profile) {  // 如果请求显示轮廓
+        std::cerr << "Input profile:" << std::endl;  // 输出输入轮廓
         for (unsigned int i = 0; i < L.rank(); i++) {
           std::cerr << prof_in[i];
           if (i < L.rank() - 1) {
@@ -186,9 +186,9 @@ int main(int argc, char** argv) {
         }
       }
     } else {
-      std::cerr << "Skipped determining input profile, as input is not lower-triangular." << std::endl;  // 如果输入不是下三角形，跳过计算配置文件
+      std::cerr << "Skipped determining input profile, as input is not lower-triangular." << std::endl;  // 如果输入不是下三角形，跳过计算轮廓
     }
-    std::cerr << "Target reduction quality alpha = " << alpha << ", rhf = " << (pow(2, alpha / 2)) << std::endl;  // 输出目标约简质量
+    std::cerr << "Target reduction quality alpha = " << alpha << ", rhf = " << (pow(2, alpha / 2)) << std::endl;  // 输出目标约化质量
   }
 
   flatter::initialize();  // 初始化 Flatter 算法
@@ -199,14 +199,14 @@ int main(int argc, char** argv) {
   );
   flatter::ComputationContext cc;  // 创建计算上下文
 
-  auto goal = flatter::LatticeReductionGoal::from_slope(L.rank(), alpha);  // 设定约简目标
-  flatter::LatticeReductionParams params(L, U, 1.02);  // 创建约简参数
-  params.goal = goal;  // 设置约简目标
+  auto goal = flatter::LatticeReductionGoal::from_slope(L.rank(), alpha);  // 设定约化目标
+  flatter::LatticeReductionParams params(L, U, 1.02);  // 创建约化参数
+  params.goal = goal;  // 设置约化目标
   if (logcond_set) {  // 如果设置了条件数
     params.log_cond = logcond;  // 设置条件数
   }
 
-  flatter::LatticeReduction latred(params, cc);  // 创建格基约简对象
+  flatter::LatticeReduction latred(params, cc);  // 创建格基约化对象
 
   auto start = std::chrono::high_resolution_clock::now();  // 记录开始时间
 
@@ -215,13 +215,13 @@ int main(int argc, char** argv) {
       {
           #pragma omp single
           {
-            latred.solve();  // 解决格基约简问题
+            latred.solve();  // 解决格基约化问题
           }
       }
   } else {
       #pragma omp taskgroup
       {
-        latred.solve();  // 解决格基约简问题
+        latred.solve();  // 解决格基约化问题
       }
   }
  
@@ -231,8 +231,8 @@ int main(int argc, char** argv) {
   if (verbose) {
     std::cerr << "Reduction took " << (microseconds / 1000) << " milliseconds." << std::endl;  // 输出耗时
   }
-  if (show_profile) {  // 如果请求显示配置文件
-    std::cerr << "Output profile:" << std::endl;  // 输出输出配置文件
+  if (show_profile) {  // 如果请求显示轮廓
+    std::cerr << "Output profile:" << std::endl;  // 输出输出轮廓
     for (unsigned int i = 0; i < L.rank(); i++) {
       std::cerr << L.profile[i];
       if (i < L.rank() - 1) {
@@ -258,7 +258,7 @@ int main(int argc, char** argv) {
     // 计算实际的 alpha
     double drop = L.profile.get_drop();  // 获取降落值
     double alpha = drop / n;  // 计算 alpha
-    std::cerr << "Achieved reduction quality alpha = " << alpha << ", rhf = " << rhf << std::endl;  // 输出实际的约简质量
+    std::cerr << "Achieved reduction quality alpha = " << alpha << ", rhf = " << rhf << std::endl;  // 输出实际的约化质量
   }
 
   if (!quiet) {
