@@ -82,7 +82,7 @@ $ python scripts/visualize_profile.py ./log
 # Installation
 ```
 $ sudo apt install libgmp-dev libmpfr-dev fplll-tools \
-	libfplll-dev libeigen3-dev
+	libfplll-dev libeigen3-dev libblas-dev liblapack-dev
 $ mkdir build && cd ./build
 $ cmake ..
 $ make

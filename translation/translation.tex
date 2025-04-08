@@ -3,8 +3,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage[a4paper, left=1.5cm, right=1.5cm]{geometry}
-\usepackage{algorithm, algorithmic}
-
+\usepackage[boxed, ruled, linesnumbered]{algorithm2e}
 \title{通过迭代压缩实现的快速格约化}
 \author{Keegan Ryan, Nadia Heninger}
 
@@ -49,9 +48,28 @@ Kirchner、Espitau 和 Fouque [32] 通过给出一种具有递归结构的算法
 
     此外，我们应用了一种格基“压缩”技术，将格基转换为具有相似几何特性但矩阵元规模更小且数值稳定性的好格基。这种压缩与 [51] 中的方法大致相似，尽管我们的分析是全新的。
 
-    我们的算法在算法 1 的伪代码中进行了总结。
+    我们的算法在Algorithm 1 的伪代码中进行了总结。
 
     %这里有一个算法1的描述
+
+	\SetAlgoNoEnd
+	\begin{algorithm}[h]
+	 \caption{约化（概要）}%算法名字
+	 \label{algorithm1}%算法标签
+	  \SetKwFunction{Reduce}{Reduce}\SetKwFunction{Compress}{Compress}
+	  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+	
+		\Input{秩为$n$的格基$B$，约化质量$\alpha$}%填写input
+		\Output{使得$BU$是$\alpha$-格约化的幺模矩阵$U$}%填写output
+		\BlankLine
+			\While{$drop(B) > \alpha n$}{
+				\For{投影子格的标号$[i:j]$依次取遍$\{[\frac{n}{4} : \frac{3n}{4}], [0: \frac{n}{2} ], [ \frac{n}{2}:n ]\}$}{
+				$ U_k $ $ \leftarrow $ \Reduce{$B_{i:j}, \alpha ' $	} 对一个更强的 $ \alpha ' < \alpha $ \;
+				$ B $ $ \leftarrow $ \Compress {$ BU_k  $} 减少了输入规模\;
+				}
+			}
+			\KwRet{ $ U $} $ \leftarrow $ 先前所有幺模矩阵的累积
+	\end{algorithm}
 
     虽然算法的一般描述简单且类似于之前的算法，但其细节和分析并非如此。压缩函数的设计对于在实践中实现数值稳定性至关重要，与 [51] 一样，它比简单地取最显著的位数更为复杂。与 [51] 不同，我们的算法迭代压缩过程，因此需要格外小心以确保累积的舍入误差保持在可管理的范围内。我们利用摄动理论得到了一阶渐近结果，以限制压缩基的元素大小和迭代压缩的精度。
 
@@ -78,6 +96,8 @@ Kirchner、Espitau 和 Fouque [32] 通过给出一种具有递归结构的算法
 
     我们论文的主要目标是描述一个完全实用且可实现的算法，该算法优于现有的格约化实现，并且旨在实际应用中使用。为此，我们的理论结果描述了算法的行为，并借助比以往工作更弱的启发式假设，论证了我们的算法的数值稳定性。我们通过实验验证了我们的启发式方法的合理性。
 
+
+\iffalse
 \section{背景知识}
 
     \subsection{记号}
@@ -120,5 +140,5 @@ Kirchner、Espitau 和 Fouque [32] 通过给出一种具有递归结构的算法
         \subsubsection{控制运行时间}
 
     \subsection{一般格基的约化}
-
+\fi
 \end{document}
